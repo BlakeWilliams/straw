@@ -3,6 +3,10 @@ name = "straw"
 description = "WIP Rust -> HTML renderer"
 version = "0.1.0"
 authors = ["Blake Williams <blake@blakewilliams.me>"]
+license = "MIT"
+license-file = "LICENSE"
+readme = "README.md"
+repository = "https://github.com/BlakeWilliams/straw"
 
 [lib]
 name = "straw"
