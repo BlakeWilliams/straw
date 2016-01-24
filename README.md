@@ -25,5 +25,5 @@ let element = Element::new("div", Some(vec![("id", "main")]), vec![
   Element::new("h1", None, "World"),
 ]);
 
-element.render(); # <div id="main"><h1>Hello</h1><h1>World</h1></div>
+element.render(); // <div id="main"><h1>Hello</h1><h1>World</h1></div>
 ```
