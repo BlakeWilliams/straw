@@ -6,7 +6,7 @@ Work in progress Experimental Rust -> HTML renderer.
 
 Add straw to `Cargo.toml`.
 
-```
+```toml
 [dependencies]
 straw = "*"
 ```
@@ -15,7 +15,7 @@ straw = "*"
 
 Import `Element` and `Renderable` and start creating `Element`s.
 
-```
+```rust
 extern crate straw;
 
 use straw::element::{Element, Renderable}
