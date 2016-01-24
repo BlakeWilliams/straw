@@ -20,13 +20,26 @@ impl Renderable for String {
     }
 }
 
+impl<'a> Renderable for &'a str {
+    fn render(&self) -> String {
+        self.to_string()
+    }
+}
+
 impl<T: Renderable> Element<T> {
-    pub fn new(tag: &str, attributes: Option<Vec<(String, String)>>, child: T) -> Element<T> {
-        let tag_name = tag.to_owned();
+    pub fn new<S: Into<String>>(tag: S, attributes: Option<Vec<(S, S)>>, child: T) -> Element<T> {
+        let attribute_list = match attributes {
+            Some(attrs) => {
+                Some(attrs.into_iter().map(|tuple| -> (String, String) {
+                    (tuple.0.into(), tuple.1.into())
+                }).collect())
+            },
+            None => None
+        };
 
         Element {
-            tag: tag_name,
-            attributes: attributes,
+            tag: tag.into(),
+            attributes: attribute_list,
             child: child
         }
     }
@@ -60,15 +73,15 @@ impl<T: Renderable> Renderable for Vec<Element<T>> {
 
 #[test]
 fn it_can_render_single_elements() {
-    let element = Element::new("div", None, "foo".to_string());
+    let element = Element::new("div", None, "foo");
     assert_eq!(element.render(), "<div>foo</div>");
 }
 
 #[test]
 fn it_can_render_vecs_of_elements() {
     let element = Element::new("div", None, vec![
-        Element::new("h1", None, "Hello".to_owned()),
-        Element::new("p", None, "This is neat, huh?".to_owned())
+        Element::new("h1", None, "Hello"),
+        Element::new("p", None, "This is neat, huh?")
     ]);
 
     assert_eq!(element.render(), "<div><h1>Hello</h1><p>This is neat, huh?</p></div>");
@@ -76,6 +89,6 @@ fn it_can_render_vecs_of_elements() {
 
 #[test]
 fn it_can_render_attributes() {
-    let element = Element::new("div", Some(vec![("id".to_owned(), "awesome".to_owned())]), "foo".to_string());
+    let element = Element::new("div", Some(vec![("id", "awesome")]), "foo".to_string());
     assert_eq!(element.render(), "<div id=\"awesome\">foo</div>");
 }

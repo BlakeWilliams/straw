@@ -20,9 +20,9 @@ extern crate straw;
 
 use straw::element::{Element, Renderable}
 
-let element = Element::new("div", Some(vec![("id".to_owned(), "main".to_owned())]), vec![
-  Element::new("h1", None, "Hello".to_owned()),
-  Element::new("h1", None, "World".to_owned()),
+let element = Element::new("div", Some(vec![("id", "main")]), vec![
+  Element::new("h1", None, "Hello"),
+  Element::new("h1", None, "World"),
 ]);
 
 element.render();
