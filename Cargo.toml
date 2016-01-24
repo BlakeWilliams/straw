@@ -1,0 +1,11 @@
+[package]
+name = "straw"
+description = "WIP Rust -> HTML renderer"
+version = "0.1.0"
+authors = ["Blake Williams <blake@blakewilliams.me>"]
+
+[lib]
+name = "straw"
+path = "src/lib.rs"
+test = true
+doctest = false
