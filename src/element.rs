@@ -1,10 +1,12 @@
+use attribute::Attr;
+
 pub trait Renderable {
     fn render(&self) -> String;
 }
 
 pub struct Element<T: Renderable> {
     tag: String,
-    attributes: Option<Vec<(String, String)>>,
+    attributes: Vec<Attr>,
     child: T
 }
 
@@ -27,36 +29,24 @@ impl<'a> Renderable for &'a str {
 }
 
 impl<T: Renderable> Element<T> {
-    pub fn new<S: Into<String>>(tag: S, attributes: Option<Vec<(S, S)>>, child: T) -> Element<T> {
-        let attribute_list = match attributes {
-            Some(attrs) => {
-                Some(attrs.into_iter().map(|tuple| -> (String, String) {
-                    (tuple.0.into(), tuple.1.into())
-                }).collect())
-            },
-            None => None
-        };
-
+    pub fn new<S: Into<String>>(tag: S, attributes: Vec<Attr>, child: T) -> Element<T> {
         Element {
             tag: tag.into(),
-            attributes: attribute_list,
+            attributes: attributes,
             child: child
         }
     }
 
     fn open_tag(&self) -> String {
-        match self.attributes.clone() {
-            Some(attributes) => {
-                let attribute_list: Vec<String> = attributes.iter().map(|tuple| -> String {
-                    format!("{}=\"{}\"", tuple.0, tuple.1)
-                }).collect();
+        let attribute_list: Vec<String> = self.clone().attributes
+            .iter()
+            .filter_map(|attribute| attribute.render())
+            .collect();
 
-                format!("{} {}", self.tag.clone(), attribute_list.join(""))
-            }
-
-            None => {
-                self.tag.clone()
-            }
+        if attribute_list.is_empty() {
+            self.tag.clone()
+        } else {
+            format!("{} {}", self.tag.clone(), attribute_list.join(""))
         }
     }
 }
@@ -73,15 +63,15 @@ impl<T: Renderable> Renderable for Vec<Element<T>> {
 
 #[test]
 fn it_can_render_single_elements() {
-    let element = Element::new("div", None, "foo");
+    let element = Element::new("div", vec![], "foo");
     assert_eq!(element.render(), "<div>foo</div>");
 }
 
 #[test]
 fn it_can_render_vecs_of_elements() {
-    let element = Element::new("div", None, vec![
-        Element::new("h1", None, "Hello"),
-        Element::new("p", None, "This is neat, huh?")
+    let element = Element::new("div", vec![], vec![
+        Element::new("h1", vec![], "Hello"),
+        Element::new("p", vec![], "This is neat, huh?")
     ]);
 
     assert_eq!(element.render(), "<div><h1>Hello</h1><p>This is neat, huh?</p></div>");
@@ -89,6 +79,21 @@ fn it_can_render_vecs_of_elements() {
 
 #[test]
 fn it_can_render_attributes() {
-    let element = Element::new("div", Some(vec![("id", "awesome")]), "foo".to_string());
+    let element = Element::new("div", vec![Attr::id("awesome")], "foo".to_string());
     assert_eq!(element.render(), "<div id=\"awesome\">foo</div>");
+}
+
+#[test]
+fn it_can_render_boolean_attributes() {
+    let element = Element::new("div", vec![Attr::disabled(false)], "foo".to_string());
+    assert_eq!(element.render(), "<div>foo</div>");
+
+    let element = Element::new("div", vec![Attr::disabled(true)], "foo".to_string());
+    assert_eq!(element.render(), "<div disabled>foo</div>");
+}
+
+#[test]
+fn it_can_still_use_rust_reserved_keywords_for_attribites() {
+    let element = Element::new("label", vec![Attr::key_value("for", "name")], "");
+    assert_eq!(element.render(), "<label for=\"name\"></label>");
 }

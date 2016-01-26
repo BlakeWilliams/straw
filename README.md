@@ -19,11 +19,12 @@ Import `Element` and `Renderable` and start creating `Element`s.
 extern crate straw;
 
 use straw::element::{Element, Renderable}
+use straw::attribute::Attr;
 
-let element = Element::new("div", Some(vec![("id", "main")]), vec![
-  Element::new("h1", None, "Hello"),
-  Element::new("h1", None, "World"),
+let element = Element::new("div", vec![Attr::id("main")], vec![
+  Element::new("h1", vec![], "Hello"),
+  Element::new("input", vec![Attr::disabled(true)], ""),
 ]);
 
-element.render(); // <div id="main"><h1>Hello</h1><h1>World</h1></div>
+element.render(); // <div id="main"><h1>Hello</h1><input disabled></input></div>
 ```
