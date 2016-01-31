@@ -1,7 +1,7 @@
 [package]
 name = "straw"
 description = "WIP Rust -> HTML renderer"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Blake Williams <blake@blakewilliams.me>"]
 license-file = "LICENSE"
 readme = "README.md"
